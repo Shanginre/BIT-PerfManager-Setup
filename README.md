@@ -2,7 +2,7 @@
 
 ![Platform](https://img.shields.io/badge/-Linux-green)
 ![Platform](https://img.shields.io/badge/-win--32%7C64-lightgrey)
-[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Shanginre/AddInNative_SynchClientServer)](https://github.com/Shanginre/AddInNative_SynchClientServer/releases)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Shanginre/BIT-PerfManager-Setup)](https://github.com/Shanginre/BIT-PerfManager-Setup/releases)
 
 Инструкция настройки сбора счетчиков производительности с серверов для продуктов линейки "БИТ:Управление производительностью".
 
