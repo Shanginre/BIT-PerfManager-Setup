@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<config xmlns="http://v8.1c.ru/v8/tech-log">
+
+	<dump location="C:\1c_logs_BIT_monitoring\dumps" create="1" type="0" externaldump="1"/>
+
+	<log location="C:\1c_logs_BIT_monitoring\heavy_events" history="1">
+		<event>
+			<eq property="name" value="CALL"/>
+			<ge property="Durationus" value="1000000"/>
+		</event>
+		<event>
+			<eq property="name" value="SCALL"/>
+			<ge property="Durationus" value="100000"/>
+		</event>
+		<event>
+			<eq property="name" value="DBMSSQL"/>
+			<ge property="Durationus" value="100000"/>
+		</event>
+		<event>
+			<eq property="name" value="DBPOSTGRS"/>
+			<ge property="Durationus" value="100000"/>
+		</event>
+		<event>
+			<eq property="name" value="SDBL"/>
+			<ge property="Durationus" value="100000"/>
+			<ne property="Sdbl" value=""/>
+		</event>
+		<event>
+			<eq property="name" value="SDBL"/>
+			<ge property="Durationus" value="5000000"/>
+			<like property="Func" value="%Transaction%"/>
+		</event>
+		<event>
+			<eq property="name" value="TLOCK"/>
+			<ge property="Durationus" value="5000000"/>
+		</event>
+
+		<property name="p:processName"/>
+		<property name="OSThread"/>
+		<property name="t:computerName"/>
+		<property name="t:connectID"/>
+		<property name="SessionID"/>
+		<property name="Usr"/>
+		<property name="Context"/>
+		<property name="Func"/>
+		<property name="Module"/>
+		<property name="Method"/>
+		<property name="IName"/>
+		<property name="MName"/>
+		<property name="MemoryPeak"/>
+		<property name="InBytes"/>
+		<property name="OutBytes"/>
+		<property name="CpuTime"/>
+		<property name="Sql"/>
+		<property name="Rows"/>
+		<property name="RowsAffected"/>
+		<property name="dbpid"/>
+		<property name="Regions"/>
+		<property name="WaitConnections"/>
+		<property name="Descr"/>
+		<property name="RetExcp"/>
+		<property name="CallID"/>
+	</log>
+
+	<log location="C:\1c_logs_BIT_monitoring\monitoring_cluster_processes" history="1">
+		<event>
+			<eq property="name" value="ATTN"/>
+		</event>
+		<event>
+			<eq property="name" value="PROC"/>
+		</event>
+		<event>
+			<eq property="name" value="CONN"/>
+			<like property="Txt" value="%Ping direction statistics%"/>
+		</event>
+		<event>
+			<eq property="name" value="CLSTR"/>
+			<eq property="Event" value="Performance update"/>
+		</event>
+
+		<property name="all"/>
+	</log>
+
+	<log location="C:\1c_logs_BIT_monitoring\errors_main" history="1">	
+		<event>
+			<eq property="name" value="ADMIN"/>
+		</event>
+		<event>
+			<eq property="name" value="EXCP"/>
+			<ne property="Descr" value="Attempt to obtain an uninitialized value of session parameter"/>
+		</event>
+		<event>
+			<eq property="name" value="QERR"/>
+		</event>		
+
+		<property name="all"/>
+	</log>
+
+</config>
