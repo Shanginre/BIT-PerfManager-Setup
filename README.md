@@ -4,7 +4,7 @@
 ![Platform](https://img.shields.io/badge/-win--32%7C64-lightgrey)
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Shanginre/AddInNative_SynchClientServer)](https://github.com/Shanginre/AddInNative_SynchClientServer/releases)
 
-Инструкция настройки сбора счетчиков производительности с серверов для продуктов "БИТ:Управление производительностью (ПРОФ)" и "БИТ:Управление производительностью (КОРП)".
+Инструкция настройки сбора счетчиков производительности с серверов для продуктов линейки "БИТ:Управление производительностью".
 
 ## Инструкция настройки для Windows
 
@@ -16,7 +16,7 @@ cd полный_адрес_папки_со_скриптом_на_диске
 ```
 
 #### Шаг 3. Запустите скрипт powershell "make_monitoring_settings.ps1" выполнив команду:
-```powershell
+```console
 powershell -File "make_monitoring_settings.ps1" -server_type xxxx [-1C_version 8.x.xx.xxxx] [-1C_cluster_port хххх] [-1C_RAS_port хххх] [-share_user хххх]
 ```
 Состав параметров скрипта зависит от роли текущего сервера:
