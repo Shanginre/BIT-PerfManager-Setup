@@ -16,7 +16,7 @@ cd полный_адрес_папки_со_скриптом_на_диске
 ```
 
 #### Шаг 3. Запустите скрипт powershell "make_monitoring_settings.ps1" выполнив команду:
-```console
+```powershell
 powershell -File "make_monitoring_settings.ps1" -server_type xxxx [-1C_version 8.x.xx.xxxx] [-1C_cluster_port хххх] [-1C_RAS_port хххх] [-share_user хххх]
 ```
 Состав параметров скрипта зависит от роли текущего сервера:
