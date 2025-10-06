@@ -1,8 +1,3 @@
 # general things to ignore
 
 /bin/
-/windows/.vs/
-/windows/Release/
-/windows/x64/
-/windows/WindowsAddin/Release/
-/windows/WindowsAddin/x64/
