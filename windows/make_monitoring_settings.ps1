@@ -158,13 +158,13 @@ if ($server_type -like "*1C*") {
     Start-Sleep -Seconds 60
 }
 
-net share BIT_monitoring_server="C:\PerfLogs\Admin\BIT_monitoring_server" /grant:$($share_user),FULL
+net share BIT_monitoring_server="C:\PerfLogs\Admin\BIT_monitoring_server" "/grant:$($share_user),FULL"
 if ($server_type -like "*1C*" -or $server_type -like "*Postgree*") {
-    net share BIT_monitoring_prosesses="C:\PerfLogs\Admin\BIT_monitoring_prosesses" /grant:$($share_user),FULL
+    net share BIT_monitoring_prosesses="C:\PerfLogs\Admin\BIT_monitoring_prosesses" "/grant:$($share_user),FULL"
 }
 if ($server_type -like "*MSSQL*") {
-    net share BIT_monitoring_MSSQL="C:\PerfLogs\Admin\BIT_monitoring_MSSQL" /grant:$($share_user),FULL
+    net share BIT_monitoring_MSSQL="C:\PerfLogs\Admin\BIT_monitoring_MSSQL" "/grant:$($share_user),FULL"
 }
 if ($server_type -like "*1C*") {
-    net share 1c_logs_BIT_monitoring="C:\1c_logs_BIT_monitoring" /grant:$($share_user),FULL
+    net share 1c_logs_BIT_monitoring="C:\1c_logs_BIT_monitoring" "/grant:$($share_user),FULL"
 }
