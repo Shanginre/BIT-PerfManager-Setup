@@ -12,6 +12,9 @@
     [string]$1C_RAS_port,
 	
     [Parameter (Mandatory=$false)]
+    [string]$1C_ClusterFolder,
+	
+    [Parameter (Mandatory=$false)]
     [string]$share_user
 )
 
@@ -62,6 +65,11 @@ if ($server_type -like "*1C*" -and $1C_cluster_port -eq "1540" -and [string]::Is
     Write-Host "Задан стандартный порт 1545 агента RAS, к которому будет обращаться система мониторинга. Если требуется указать другой порт, укажите в параметрах запуска скрипта: -1C_RAS_port хххх"
     
     $1C_RAS_port="1545"
+}
+
+if ($server_type -like "*1C*" -and [string]::IsNullOrEmpty($1C_ClusterFolder)) {
+    $1C_ClusterFolder="C:\Program Files\1cv8\srvinfo"
+    Write-Host "Задан стандартный путь директории кластера. Если требуется указать другой путь, укажите в параметрах запуска скрипта: -1C_ClusterFolder хххх"
 }
 
 if ([string]::IsNullOrEmpty($share_user)) {
@@ -140,14 +148,37 @@ if ($server_type -like "*1C*") {
 
 if ($server_type -like "*1C*") {
     Write-Host "-------------------------------------------------------------------------------------------------"
-    Write-Host "Регистрируем службу RAS"
     
+	Write-Host "Регистрируем службу RAS"   
     New-Service -Name "1C:Enterprise 8.3 Remote Server ($($1C_cluster_port))" -BinaryPathName "`"C:\Program Files\1cv8\$($1C_version)\bin\ras.exe`" cluster --service --port=$($1C_RAS_port) $(hostname):$($1C_cluster_port)" -DisplayName "1C:Enterprise 8.3 Remote Server ($($1C_cluster_port))" -StartupType Automatic
     
     Write-Host "Запускаем службу RAS"
     Start-Service -Name "1C:Enterprise 8.3 Remote Server ($($1C_cluster_port))"
 }
 
+if ($server_type -like "*1C*") {
+    #Write-Host "-------------------------------------------------------------------------------------------------"
+    
+	#Write-Host "Создаем папку C:\BIT_ClusterFoldersSizeLogs для логов размеров директорий кластера"   
+	#New-Item -Path "C:\BIT_ClusterFoldersSizeLogs" -ItemType Directory
+	#New-Item -Path "C:\BIT_ClusterFoldersSizeLogs\logs" -ItemType Directory
+
+	#Write-Host "Распаковываем архив PortableGit.zip в папку C:\BIT_ClusterFoldersSizeLogs с утилитой Git Bash для выполнения скриптов *.sh"	
+	#Expand-Archive -LiteralPath 'PortableGit.zip' -DestinationPath C:\BIT_ClusterFoldersSizeLogs
+	
+	#Write-Host "Формируем текст файла скрипта SaveClusterFoldersSize.sh для логирования размеров вложенных директорий кластера $($1C_ClusterFolder) в папку C:\BIT_ClusterFoldersSizeLogs"	
+	#$currentDate = Get-Date;
+	#$fileNameDate = $currentDate.ToString("yyyy-MM-dd_HHmmss");
+	#New-Item -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -ItemType file
+	#Clear-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh"
+	#Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value "#!/bin/bash"
+	#Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value ""
+	#Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value 'archiving_date=$(date +''%y%m%d%H'')'
+	#Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value "du --apparent-size --max-depth=3 `"$($1C_ClusterFolder)`" > C:/BIT_ClusterFoldersSizeLogs/logs/SizeLogs_`${archiving_date}.txt"
+	
+    #Write-Host "Создаем задание для логирования размеров директорий кластера"
+    #schtasks.exe /Create /XML "BIT_Collecting_sizes_1C_cluster_folders.xml" /tn BIT_Collecting_sizes_1C_cluster_folders
+}
 
 Write-Host "-------------------------------------------------------------------------------------------------"
 Write-Host "Расшариваем папки с логами"
@@ -167,4 +198,5 @@ if ($server_type -like "*MSSQL*") {
 }
 if ($server_type -like "*1C*") {
     net share 1c_logs_BIT_monitoring="C:\1c_logs_BIT_monitoring" "/grant:$($share_user),FULL"
+	#net share BIT_ClusterFoldersSizeLogs="C:\BIT_ClusterFoldersSizeLogs\logs" "/grant:$($share_user),FULL"
 }
