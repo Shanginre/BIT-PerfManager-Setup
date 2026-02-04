@@ -157,27 +157,30 @@ if ($server_type -like "*1C*") {
 }
 
 if ($server_type -like "*1C*") {
-    #Write-Host "-------------------------------------------------------------------------------------------------"
+    Write-Host "-------------------------------------------------------------------------------------------------"
     
-	#Write-Host "Создаем папку C:\BIT_ClusterFoldersSizeLogs для логов размеров директорий кластера"   
-	#New-Item -Path "C:\BIT_ClusterFoldersSizeLogs" -ItemType Directory
-	#New-Item -Path "C:\BIT_ClusterFoldersSizeLogs\logs" -ItemType Directory
+	Write-Host "Создаем папку C:\BIT_ClusterFoldersSizeLogs для логов размеров директорий кластера"   
+	New-Item -Path "C:\BIT_ClusterFoldersSizeLogs" -ItemType Directory
+	New-Item -Path "C:\BIT_ClusterFoldersSizeLogs\logs" -ItemType Directory
 
-	#Write-Host "Распаковываем архив PortableGit.zip в папку C:\BIT_ClusterFoldersSizeLogs с утилитой Git Bash для выполнения скриптов *.sh"	
-	#Expand-Archive -LiteralPath 'PortableGit.zip' -DestinationPath C:\BIT_ClusterFoldersSizeLogs
+	Write-Host "Установите утилиту Git Bash для выполнения скриптов *.sh, в частности, для мониторинга размеров директорий кластере 1С"
+    Write-Host "Утилита должна быть установлена в папку C:\Program Files\Git\bin (по умолчанию)"
+    pause
+    Start-Process "https://git-scm.com/install/windows"
+    pause	
 	
-	#Write-Host "Формируем текст файла скрипта SaveClusterFoldersSize.sh для логирования размеров вложенных директорий кластера $($1C_ClusterFolder) в папку C:\BIT_ClusterFoldersSizeLogs"	
-	#$currentDate = Get-Date;
-	#$fileNameDate = $currentDate.ToString("yyyy-MM-dd_HHmmss");
-	#New-Item -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -ItemType file
-	#Clear-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh"
-	#Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value "#!/bin/bash"
-	#Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value ""
-	#Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value 'archiving_date=$(date +''%y%m%d%H'')'
-	#Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value "du --apparent-size --max-depth=3 `"$($1C_ClusterFolder)`" > C:/BIT_ClusterFoldersSizeLogs/logs/SizeLogs_`${archiving_date}.txt"
+	Write-Host "Формируем текст файла скрипта SaveClusterFoldersSize.sh для логирования размеров вложенных директорий кластера $($1C_ClusterFolder) в папку C:\BIT_ClusterFoldersSizeLogs"	
+	$currentDate = Get-Date;
+	$fileNameDate = $currentDate.ToString("yyyy-MM-dd_HHmmss");
+	New-Item -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -ItemType file
+	Clear-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh"
+	Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value "#!/bin/bash"
+	Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value ""
+	Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value 'archiving_date=$(date +''%y%m%d%H'')'
+	Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value "du --apparent-size --max-depth=3 `"$($1C_ClusterFolder)`" > C:/BIT_ClusterFoldersSizeLogs/logs/SizeLogs_`${archiving_date}.txt"
 	
-    #Write-Host "Создаем задание для логирования размеров директорий кластера"
-    #schtasks.exe /Create /XML "BIT_Collecting_sizes_1C_cluster_folders.xml" /tn BIT_Collecting_sizes_1C_cluster_folders
+    Write-Host "Создаем задание для логирования размеров директорий кластера"
+    schtasks.exe /Create /XML "BIT_Collecting_sizes_1C_cluster_folders.xml" /tn BIT_Collecting_sizes_1C_cluster_folders
 }
 
 Write-Host "-------------------------------------------------------------------------------------------------"
@@ -198,5 +201,8 @@ if ($server_type -like "*MSSQL*") {
 }
 if ($server_type -like "*1C*") {
     net share 1c_logs_BIT_monitoring="C:\1c_logs_BIT_monitoring" "/grant:$($share_user),FULL"
-	#net share BIT_ClusterFoldersSizeLogs="C:\BIT_ClusterFoldersSizeLogs\logs" "/grant:$($share_user),FULL"
+	net share BIT_ClusterFoldersSizeLogs="C:\BIT_ClusterFoldersSizeLogs\logs" "/grant:$($share_user),FULL"
 }
+
+Write-Host "Убедитесь, что сетевые папки доступны пользователю $($share_user). При необходимости, укажите пользователя в сетевых папках ВРУЧНУЮ"
+pause
