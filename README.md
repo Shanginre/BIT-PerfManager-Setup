@@ -54,16 +54,18 @@ powershell -File "make_monitoring_settings.ps1" -server_type 1C_MSSQL -1C_versio
 - версия платформы кластера 1С, который ТРЕБУЕТСЯ МОНИТОРИТЬ: 8.3.24.1667
 - порт кластера кластера 1С, который ТРЕБУЕТСЯ МОНИТОРИТЬ: 1540 (стандартный)
 - порт агента RAS: 1545 (стандартный)
+- адрес каталога данных кластера 1С: C:\Program Files\1cv8\srvinfo (стандартный)
 - имя пользователя, которому открыты сетевые папки с логами: everyone (все пользователи)
 
 ```console
-powershell -File "make_monitoring_settings.ps1" -server_type 1C -1C_version 8.3.24.1667 -1C_cluster_port 2540 -1C_RAS_port 2545 -share_user admin
+powershell -File "make_monitoring_settings.ps1" -server_type 1C -1C_version 8.3.24.1667 -1C_cluster_port 2540 -1C_RAS_port 2545 -1C_ClusterFolder "D:\1cv8\srvinfo" -share_user admin
 
 ```
 - роли сервера: сервер приложений 1С
 - версия платформы кластера 1С, который ТРЕБУЕТСЯ МОНИТОРИТЬ: 8.3.24.1667
 - порт кластера кластера 1С, который ТРЕБУЕТСЯ МОНИТОРИТЬ: 2540
 - порт агента RAS: 2545
+- адрес каталога данных кластера 1С: D:\1cv8\srvinfo
 - имя пользователя, которому открыты сетевые папки с логами: admin
 
 ```console
