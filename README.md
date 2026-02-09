@@ -115,9 +115,9 @@ sudo bash setup_monitoring.sh --server-type=xxxx
 - **--share-user** - имя пользователя, для которого будут открыты сетевые папки с логами.
    - Имя пользователя должно совпадать с именем пользователя, под которым работает служба 1С, где размещена база мониторинга "БИТ.Управление производительностью".
    - В некоторых случаях не удается программно открыть сетевой доступ к папкам. Рекомендуется вручную проверить настройки доступа сетевых папок:
-      - /var/log/bit_monitoring/server_counters_logs
-      - /var/log/bit_monitoring/1C_tech_logs (только для ролей сервера "1C" или "1C_PostgreSQL")
-      - /var/log/bit_monitoring/cluster_folders_sizes_logs (только для ролей сервера "1C" или "1C_PostgreSQL")
+      - */var/log/bit_monitoring/server_counters_logs*
+      - */var/log/bit_monitoring/1C_tech_logs* (только для ролей сервера "1C" или "1C_PostgreSQL")
+      - */var/log/bit_monitoring/cluster_folders_sizes_logs* (только для ролей сервера "1C" или "1C_PostgreSQL")
 
 #### Примеры:
 ```console
