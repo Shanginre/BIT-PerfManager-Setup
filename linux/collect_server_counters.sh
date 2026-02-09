@@ -12,24 +12,7 @@ done < <( pgrep 'vmstat|iostat|ifstat|pidstat' -u root )
 
 sleep 1
 
-root_directory="/var/log/bit_monitoring"
-if [ ! -d "$root_directory" ]; then
-        mkdir -p "$root_directory";
-        chmod 777 "$root_directory";
-fi
-
-server_counters_directory="/var/log/bit_monitoring/server_counters"
-if [ ! -d "$server_counters_directory" ]; then
-        mkdir -p "$server_counters_directory";
-        chmod 777 "$server_counters_directory";
-fi
-
-tech_logs_directory="/var/log/bit_monitoring/tech_logs"
-if [ ! -d "$tech_logs_directory" ]; then
-        mkdir -p "$tech_logs_directory";
-        chmod 777 "$tech_logs_directory";
-fi
-
+server_counters_directory="/var/log/bit_monitoring/server_counters_logs"
 current_date=$(date +"%y%m%d%H%M%S")
 
 # vmstat
@@ -47,7 +30,7 @@ stdbuf -o0 grep -Ev "Linux|Device|^$|:" | stdbuf -o0 tr -s ' '| stdbuf -o0 sed -
 adddate >> "${server_counters_directory}/iostat_${current_date}.csv" &
 
 # ifstat
-stdbuf -o0 ifstat -nl 30 |
+stdbuf -o0 ifstat -n 30 |
 stdbuf -o0 tr -s ' '| stdbuf -o0 sed -r -e 's/\/s /\/s_/g' -e 's/^ //g' -e 's/,/\./g' -e 's/ /,/g' -e 's/\/s_/\/s /g' |
 adddate > "${server_counters_directory}/ifstat_${current_date}.csv" &
 
