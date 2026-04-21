@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config xmlns="http://v8.1c.ru/v8/tech-log">
 
-	<log location="/var/log/bit_monitoring/tech_logs/heavy_events" history="1">
+	<log location="/var/log/bit_monitoring/1C_tech_logs/heavy_events" history="1">
 		<event>
 			<eq property="name" value="CALL"/>
 			<ge property="Durationus" value="1000000"/>
@@ -33,6 +33,17 @@
 			<ge property="Durationus" value="5000000"/>
 		</event>
 
+		<event>
+			<eq property="name" value="CALL"/>
+			<ge property="Durationus" value="10000"/>
+			<like property="Context" value="Форма.Записать :%"/>
+		</event>
+		<event>
+			<eq property="name" value="CALL"/>
+			<ge property="Durationus" value="10000"/>
+			<like property="Context" value="Система.ПолучитьФорму :%"/>
+		</event>
+
 		<property name="p:processName"/>
 		<property name="OSThread"/>
 		<property name="t:computerName"/>
@@ -60,7 +71,7 @@
 		<property name="CallID"/>
 	</log>
 
-	<log location="/var/log/bit_monitoring/tech_logs/monitoring_cluster_processes" history="1">
+	<log location="/var/log/bit_monitoring/1C_tech_logs/monitoring_cluster_processes" history="1">
 		<event>
 			<eq property="name" value="ATTN"/>
 		</event>
@@ -79,7 +90,7 @@
 		<property name="all"/>
 	</log>
 
-	<log location="/var/log/bit_monitoring/tech_logs/errors_main" history="1">	
+	<log location="/var/log/bit_monitoring/1C_tech_logs/errors_main" history="1">	
 		<event>
 			<eq property="name" value="ADMIN"/>
 		</event>

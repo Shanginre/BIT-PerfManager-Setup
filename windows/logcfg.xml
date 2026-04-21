@@ -35,6 +35,17 @@
 			<ge property="Durationus" value="5000000"/>
 		</event>
 
+		<event>
+			<eq property="name" value="CALL"/>
+			<ge property="Durationus" value="10000"/>
+			<like property="Context" value="Форма.Записать :%"/>
+		</event>
+		<event>
+			<eq property="name" value="CALL"/>
+			<ge property="Durationus" value="10000"/>
+			<like property="Context" value="Система.ПолучитьФорму :%"/>
+		</event>
+
 		<property name="p:processName"/>
 		<property name="OSThread"/>
 		<property name="t:computerName"/>
