@@ -18,7 +18,8 @@ cd полный_адрес_папки_со_скриптом_на_диске
 
 #### Шаг 3. Запустите скрипт powershell "setup_monitoring.ps1" выполнив команду:
 ```console
-powershell -File "setup_monitoring.ps1" -server_type xxxx [-1C_version 8.x.xx.xxxx] [-1C_cluster_port хххх] [-1C_RAS_port хххх] [-1C_ClusterFolder хххх] [-share_user хххх]
+powershell -ExecutionPolicy Bypass -File "setup_monitoring.ps1" -server_type xxxx 
+      [-version_1C 8.x.xx.xxxx] [-cluster_port_1C хххх] [-RAS_port_1C хххх] [-ClusterFolder_1C хххх] [-share_user хххх]
 ```
 Состав параметров скрипта зависит от роли сервера, на котором инсталлируется сбор счетчиков:
 - **server_type** - имя роли сервера (можно указывать несколько через символ \_). Доступны следующие имена ролей:
@@ -28,15 +29,15 @@ powershell -File "setup_monitoring.ps1" -server_type xxxx [-1C_version 8.x.xx.xx
    - *1C_MSSQL* - на сервере работает служба 1C и служба MSSQL
    - *1C_Postgree* - на сервере работает служба 1C и служба Postgree
    - *other* - на сервере не работают служба 1С и службы СУБД.
-- **1C_version** - версия платформы кластера 1С, который ТРЕБУЕТСЯ МОНИТОРИТЬ, к которому будет подключен RAS.
+- **version_1C** - версия платформы кластера 1С, который ТРЕБУЕТСЯ МОНИТОРИТЬ, к которому будет подключен RAS.
    - Параметр указывается только для ролей сервера "1C", "1C_MSSQL" или "1C_Postgree".
-- **1C_cluster_port** - порт кластера кластера 1С, который ТРЕБУЕТСЯ МОНИТОРИТЬ, к которому будет подключен RAS.
+- **cluster_port_1C** - порт кластера кластера 1С, который ТРЕБУЕТСЯ МОНИТОРИТЬ, к которому будет подключен RAS.
    - Если порт службы 1С стандартный 1540, то данный параметр можно не указывать.
    - Параметр указывается только для ролей сервера "1C", "1C_MSSQL" или "1C_Postgree". 
-- **1C_RAS_port** - порт агента RAS, к которому будет обращаться система мониторинга.
+- **RAS_port_1C** - порт агента RAS, к которому будет обращаться система мониторинга.
    - Если параметр не указан, то назначается порт агента RAS по умолчанию 1545.
    - Параметр указывается только для ролей сервера "1C", "1C_MSSQL" или "1C_Postgree".
-- **1C_ClusterFolder** - имя каталога данных кластера 1С, который содержит в себе сеансовые данные кластера, 
+- **ClusterFolder_1C** - имя каталога данных кластера 1С, который содержит в себе сеансовые данные кластера, 
       а также индекс полнотекстового поиска и журнал регистрации информационных баз,
       которые зарегистрированы в данном кластере.
    - Если расположение каталога не переопределено в параметрах запуска службы 1С, то 
@@ -53,7 +54,7 @@ powershell -File "setup_monitoring.ps1" -server_type xxxx [-1C_version 8.x.xx.xx
 
 #### Примеры:
 ```console
-powershell -File "make_monitoring_settings.ps1" -server_type 1C_MSSQL -1C_version 8.3.24.1667 -share_user everyone
+powershell -File "make_monitoring_settings.ps1" -server_type 1C_MSSQL -version_1C 8.3.24.1667 -share_user everyone
 
 ```
 - роли сервера: сервер приложений 1С и сервер СУБД MSSQL
@@ -64,7 +65,7 @@ powershell -File "make_monitoring_settings.ps1" -server_type 1C_MSSQL -1C_versio
 - имя пользователя, которому открыты сетевые папки с логами: everyone (все пользователи)
 
 ```console
-powershell -File "make_monitoring_settings.ps1" -server_type 1C -1C_version 8.3.24.1667 -1C_cluster_port 2540 -1C_RAS_port 2545 -1C_ClusterFolder "D:\1cv8\srvinfo" -share_user admin
+powershell -File "make_monitoring_settings.ps1" -server_type 1C -version_1C 8.3.24.1667 -cluster_port_1C 2540 -RAS_port_1C 2545 -ClusterFolder_1C "D:\1cv8\srvinfo" -share_user admin
 
 ```
 - роли сервера: сервер приложений 1С

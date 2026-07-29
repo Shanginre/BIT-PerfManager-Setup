@@ -3,16 +3,16 @@
     [string]$server_type,
 
     [Parameter (Mandatory=$false)]
-    [string]$1C_version,
+    [string]$version_1C,
 
     [Parameter (Mandatory=$false)]
-    [string]$1C_cluster_port,
+    [string]$cluster_port_1C,
 
     [Parameter (Mandatory=$false)]
-    [string]$1C_RAS_port,
+    [string]$RAS_port_1C,
 	
     [Parameter (Mandatory=$false)]
-    [string]$1C_ClusterFolder,
+    [string]$ClusterFolder_1C,
 	
     [Parameter (Mandatory=$false)]
     [string]$share_user
@@ -41,19 +41,19 @@ if ($server_type -like "*1С*") {
     $server_type="1C"
 }
 
-if ($server_type -like "*1C*" -and [string]::IsNullOrEmpty($1C_version)) {
-    Write-Host "Не задана версия платформы кластера 1С, к которому будет подключен RAS. Укажите в параметрах запуска скрипта: -1C_version 8.x.xx.xxxx"
+if ($server_type -like "*1C*" -and [string]::IsNullOrEmpty($version_1C)) {
+    Write-Host "Не задана версия платформы кластера 1С, к которому будет подключен RAS. Укажите в параметрах запуска скрипта: -version_1C 8.x.xx.xxxx"
     
     pause
     Exit
 }
 
-if ($server_type -like "*1C*" -and [string]::IsNullOrEmpty($1C_cluster_port)) {
-    $1C_cluster_port="1540"
-    Write-Host "Задан стандартный порт 1540 кластера кластера 1С, к которому будет подключен RAS. Если требуется указать другой порт, укажите в параметрах запуска скрипта: -1C_cluster_port хххх"
+if ($server_type -like "*1C*" -and [string]::IsNullOrEmpty($cluster_port_1C)) {
+    $cluster_port_1C="1540"
+    Write-Host "Задан стандартный порт 1540 кластера кластера 1С, к которому будет подключен RAS. Если требуется указать другой порт, укажите в параметрах запуска скрипта: -cluster_port_1C хххх"
 }
 
-if ($server_type -like "*1C*" -and $1C_cluster_port -ne "1540" -and [string]::IsNullOrEmpty($1C_RAS_port)) {
+if ($server_type -like "*1C*" -and $cluster_port_1C -ne "1540" -and [string]::IsNullOrEmpty($RAS_port_1C)) {
     Write-Host "Для кластера 1С, к которому будет подключен RAS, задан нестандартный порт. Укажите порт агента RAS, к которому будет обращаться система мониторинга."
     Write-Host "Порт агента RAS по умолчанию 1545"
     
@@ -61,15 +61,15 @@ if ($server_type -like "*1C*" -and $1C_cluster_port -ne "1540" -and [string]::Is
     Exit
 }
 
-if ($server_type -like "*1C*" -and $1C_cluster_port -eq "1540" -and [string]::IsNullOrEmpty($1C_RAS_port)) {
-    Write-Host "Задан стандартный порт 1545 агента RAS, к которому будет обращаться система мониторинга. Если требуется указать другой порт, укажите в параметрах запуска скрипта: -1C_RAS_port хххх"
+if ($server_type -like "*1C*" -and $cluster_port_1C -eq "1540" -and [string]::IsNullOrEmpty($RAS_port_1C)) {
+    Write-Host "Задан стандартный порт 1545 агента RAS, к которому будет обращаться система мониторинга. Если требуется указать другой порт, укажите в параметрах запуска скрипта: -RAS_port_1C хххх"
     
-    $1C_RAS_port="1545"
+    $RAS_port_1C="1545"
 }
 
-if ($server_type -like "*1C*" -and [string]::IsNullOrEmpty($1C_ClusterFolder)) {
-    $1C_ClusterFolder="C:\Program Files\1cv8\srvinfo"
-    Write-Host "Задан стандартный путь директории кластера. Если требуется указать другой путь, укажите в параметрах запуска скрипта: -1C_ClusterFolder хххх"
+if ($server_type -like "*1C*" -and [string]::IsNullOrEmpty($ClusterFolder_1C)) {
+    $ClusterFolder_1C="C:\Program Files\1cv8\srvinfo"
+    Write-Host "Задан стандартный путь директории кластера. Если требуется указать другой путь, укажите в параметрах запуска скрипта: -ClusterFolder_1C хххх"
 }
 
 if ([string]::IsNullOrEmpty($share_user)) {
@@ -150,10 +150,10 @@ if ($server_type -like "*1C*") {
     Write-Host "-------------------------------------------------------------------------------------------------"
     
 	Write-Host "Регистрируем службу RAS"   
-    New-Service -Name "1C:Enterprise 8.3 Remote Server ($($1C_cluster_port))" -BinaryPathName "`"C:\Program Files\1cv8\$($1C_version)\bin\ras.exe`" cluster --service --port=$($1C_RAS_port) $(hostname):$($1C_cluster_port)" -DisplayName "1C:Enterprise 8.3 Remote Server ($($1C_cluster_port))" -StartupType Automatic
+    New-Service -Name "1C:Enterprise 8.3 Remote Server ($($cluster_port_1C))" -BinaryPathName "`"C:\Program Files\1cv8\$($version_1C)\bin\ras.exe`" cluster --service --port=$($RAS_port_1C) $(hostname):$($cluster_port_1C)" -DisplayName "1C:Enterprise 8.3 Remote Server ($($cluster_port_1C))" -StartupType Automatic
     
     Write-Host "Запускаем службу RAS"
-    Start-Service -Name "1C:Enterprise 8.3 Remote Server ($($1C_cluster_port))"
+    Start-Service -Name "1C:Enterprise 8.3 Remote Server ($($cluster_port_1C))"
 }
 
 if ($server_type -like "*1C*") {
@@ -169,7 +169,7 @@ if ($server_type -like "*1C*") {
     Start-Process "https://git-scm.com/install/windows"
     pause	
 	
-	Write-Host "Формируем текст файла скрипта SaveClusterFoldersSize.sh для логирования размеров вложенных директорий кластера $($1C_ClusterFolder) в папку C:\BIT_ClusterFoldersSizeLogs"	
+	Write-Host "Формируем текст файла скрипта SaveClusterFoldersSize.sh для логирования размеров вложенных директорий кластера $($ClusterFolder_1C) в папку C:\BIT_ClusterFoldersSizeLogs"	
 	$currentDate = Get-Date;
 	$fileNameDate = $currentDate.ToString("yyyy-MM-dd_HHmmss");
 	New-Item -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -ItemType file
@@ -177,7 +177,7 @@ if ($server_type -like "*1C*") {
 	Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value "#!/bin/bash"
 	Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value ""
 	Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value 'archiving_date=$(date +''%y%m%d%H'')'
-	Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value "du --apparent-size --max-depth=3 `"$($1C_ClusterFolder)`" > C:/BIT_ClusterFoldersSizeLogs/logs/SizeLogs_`${archiving_date}.txt"
+	Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value "du --apparent-size --max-depth=3 `"$($ClusterFolder_1C)`" > C:/BIT_ClusterFoldersSizeLogs/logs/SizeLogs_`${archiving_date}.txt"
 	
     Write-Host "Создаем задание для логирования размеров директорий кластера"
     schtasks.exe /Create /XML "BIT_Collecting_sizes_1C_cluster_folders.xml" /tn BIT_Collecting_sizes_1C_cluster_folders
