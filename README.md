@@ -19,7 +19,7 @@ cd полный_адрес_папки_со_скриптом_на_диске
 #### Шаг 3. Запустите скрипт powershell "setup_monitoring.ps1" выполнив команду:
 ```console
 powershell -ExecutionPolicy Bypass -File "setup_monitoring.ps1" -server_type xxxx 
-      [-version_1C 8.x.xx.xxxx] [-cluster_port_1C хххх] [-RAS_port_1C хххх] [-ClusterFolder_1C хххх] [-share_user хххх]
+      [-version_1C 8.x.xx.xxxx] [-cluster_port_1C хххх] [-RAS_port_1C хххх] [-ClusterFolder_1C хххх] [-share_user хххх] [-logs_folder хххх]
 ```
 Состав параметров скрипта зависит от роли сервера, на котором инсталлируется сбор счетчиков:
 - **server_type** - имя роли сервера (можно указывать несколько через символ \_). Доступны следующие имена ролей:
@@ -51,10 +51,11 @@ powershell -ExecutionPolicy Bypass -File "setup_monitoring.ps1" -server_type xxx
       - *C:\PerfLogs\BIT_monitoring_prosesses*
       - *C:\1c_logs_BIT* (только для ролей сервера "1C", "1C_MSSQL" или "1C_PostgreSQL")
       - *C:\BIT_ClusterFoldersSizeLogs\logs* (только для ролей сервера "1C", "1C_MSSQL" или "1C_PostgreSQL")
+- **logs_folder** - имя общего каталога логов мониторинга (счетчики OC, тех. журнал 1С и т.д.)
 
 #### Примеры:
 ```console
-powershell -File "make_monitoring_settings.ps1" -server_type 1C_MSSQL -version_1C 8.3.24.1667 -share_user everyone
+powershell -File "make_monitoring_settings.ps1" -server_type 1C_MSSQL -version_1C 8.3.24.1667 -share_user everyone -logs_folder "D:\бит_мониторинг"
 
 ```
 - роли сервера: сервер приложений 1С и сервер СУБД MSSQL
@@ -63,9 +64,10 @@ powershell -File "make_monitoring_settings.ps1" -server_type 1C_MSSQL -version_1
 - порт агента RAS: 1545 (стандартный)
 - адрес каталога данных кластера 1С: C:\Program Files\1cv8\srvinfo (стандартный)
 - имя пользователя, которому открыты сетевые папки с логами: everyone (все пользователи)
+- адрес общего каталога логов мониторинга: D:\бит_мониторинг
 
 ```console
-powershell -File "make_monitoring_settings.ps1" -server_type 1C -version_1C 8.3.24.1667 -cluster_port_1C 2540 -RAS_port_1C 2545 -ClusterFolder_1C "D:\1cv8\srvinfo" -share_user admin
+powershell -File "make_monitoring_settings.ps1" -server_type 1C -version_1C 8.3.24.1667 -cluster_port_1C 2540 -RAS_port_1C 2545 -ClusterFolder_1C "D:\1cv8\srvinfo" -share_user admin -logs_folder "D:\бит_мониторинг"
 
 ```
 - роли сервера: сервер приложений 1С
@@ -74,13 +76,15 @@ powershell -File "make_monitoring_settings.ps1" -server_type 1C -version_1C 8.3.
 - порт агента RAS: 2545
 - адрес каталога данных кластера 1С: D:\1cv8\srvinfo
 - имя пользователя, которому открыты сетевые папки с логами: admin
+- адрес общего каталога логов мониторинга: D:\бит_мониторинг
 
 ```console
-powershell -File "make_monitoring_settings.ps1" -server_type MSSQL -share_user admin
+powershell -File "make_monitoring_settings.ps1" -server_type MSSQL -share_user admin -logs_folder "D:\бит_мониторинг"
 
 ```
 - роли сервера: сервер СУБД MSSQL
 - имя пользователя, которому открыты сетевые папки с логами: admin
+- адрес общего каталога логов мониторинга: D:\бит_мониторинг
 
 
 ## Инструкция настройки для Linux

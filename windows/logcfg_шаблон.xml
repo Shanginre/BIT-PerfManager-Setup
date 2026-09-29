@@ -1,9 +1,9 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <config xmlns="http://v8.1c.ru/v8/tech-log">
 
-	<dump location="C:\1c_logs_BIT_monitoring\dumps" create="1" type="0" externaldump="1"/>
+	<dump location="C:\BIT_1C_tech_logs\dumps" create="1" type="0" externaldump="1"/>
 
-	<log location="C:\1c_logs_BIT_monitoring\heavy_events" history="1">
+	<log location="C:\BIT_1C_tech_logs\heavy_events" history="1">
 		<event>
 			<eq property="name" value="CALL"/>
 			<ge property="Durationus" value="1000000"/>
@@ -22,7 +22,7 @@
 		</event>
 		<event>
 			<eq property="name" value="SDBL"/>
-			<ge property="Durationus" value="10000"/>
+			<ge property="Durationus" value="30000"/>
 			<ne property="Sdbl" value=""/>
 		</event>
 		<event>
@@ -73,7 +73,7 @@
 		<property name="CallID"/>
 	</log>
 
-	<log location="C:\1c_logs_BIT_monitoring\monitoring_cluster_processes" history="1">
+	<log location="C:\BIT_1C_tech_logs\monitoring_cluster_processes" history="1">
 		<event>
 			<eq property="name" value="ATTN"/>
 		</event>
@@ -92,7 +92,7 @@
 		<property name="all"/>
 	</log>
 
-	<log location="C:\1c_logs_BIT_monitoring\errors_main" history="1">	
+	<log location="C:\BIT_1C_tech_logs\errors_main" history="1">	
 		<event>
 			<eq property="name" value="ADMIN"/>
 		</event>

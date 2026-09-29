@@ -20,7 +20,7 @@
 		</event>
 		<event>
 			<eq property="name" value="SDBL"/>
-			<ge property="Durationus" value="10000"/>
+			<ge property="Durationus" value="30000"/>
 			<ne property="Sdbl" value=""/>
 		</event>
 		<event>

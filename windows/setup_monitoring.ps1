@@ -15,9 +15,85 @@
     [string]$ClusterFolder_1C,
 	
     [Parameter (Mandatory=$false)]
-    [string]$share_user
+    [string]$share_user,
+	
+    [Parameter (Mandatory=$false)]
+    [string]$logs_folder
 )
 
+# ---------- Вспомогательные функции ----------
+
+# Создать новый файл настроек с нужным именем общей папки сбора логов
+function New-SettingsFileFromTemplate {
+    param(
+        [string]$file_old,
+        [string]$file_new,
+        [string]$logs_folder_old,
+        [string]$logs_folder_new,
+        [string]$encoding = "UTF8"
+    )
+
+    $content_sample = Get-Content -Path $file_old -Raw -Encoding UTF8
+    $newContent = $content_sample -replace [regex]::Escape($logs_folder_old), $logs_folder_new
+    $file_new_Path = Join-Path $PSScriptRoot $file_new
+
+    if ($encoding -eq "UTF8") {
+        New-Item -Path $file_new -ItemType File -Force | Out-Null
+        [System.IO.File]::WriteAllText(
+            $file_new_Path,
+            $newContent,
+            (New-Object System.Text.UTF8Encoding($false))
+        )
+    }else{
+
+        [System.IO.File]::WriteAllText(
+            $file_new_Path,
+            $newContent,
+            (New-Object System.Text.UnicodeEncoding($false, $true))
+        )
+    }
+}
+
+# Полностью остановить и удалить службу (по объекту CimInstance)
+function Remove-RasService {
+    param([Parameter(Mandatory)][object]$Service)
+
+    $name = $Service.Name
+
+    if ($Service.State -ne 'Stopped') {
+        Write-Host "  Останавливаем службу '$name'"
+        Stop-Service -Name $name -Force -ErrorAction SilentlyContinue
+
+        # Ждём фактической остановки
+        $timeout = 15
+        while ($timeout -gt 0) {
+            $s = Get-Service -Name $name -ErrorAction SilentlyContinue
+            if (-not $s -or $s.Status -eq 'Stopped') { break }
+            Start-Sleep -Seconds 1
+            $timeout--
+        }
+    }
+
+    Write-Host "  Удаляем службу '$name'"
+    $null = & sc.exe delete "$name" 2>&1
+
+    # Ждём, пока SCM действительно уберёт запись о службе
+    $timeout = 15
+    while ($timeout -gt 0) {
+        if (-not (Get-Service -Name $name -ErrorAction SilentlyContinue)) { break }
+        Start-Sleep -Seconds 1
+        $timeout--
+    }
+}
+
+# Извлечь версию платформы из PathName вида "...\1cv8\<версия>\bin\ras.exe" (...)
+function Get-PlatformVersionFromPath {
+    param([string]$Path)
+    if ($Path -and $Path -match '\\1cv8\\([^\\]+)\\bin\\ras\.exe') {
+        return $Matches[1]
+    }
+    return $null
+}
 
 Write-Host "-------------------------------------------------------------------------------------------------"
 Write-Host "Проверяем коррентность заполнения входных параметров скрипта"
@@ -35,6 +111,8 @@ if ([string]::IsNullOrEmpty($server_type)) {
     pause
     Exit
 }
+
+# ---------- Основной скрипт ----------
 
 if ($server_type -like "*1С*") {
     # Заменяем русский символ "С" на аналогичный латинский
@@ -79,15 +157,19 @@ if ([string]::IsNullOrEmpty($share_user)) {
     Exit
 }
 
+New-Item -Path $logs_folder -ItemType Directory -Force | Out-Null
 
 Write-Host "-------------------------------------------------------------------------------------------------"
 Write-Host "Создаем сборщики счетчиков Perfmon"
 
+New-SettingsFileFromTemplate -file_old "BIT_monitoring_server_шаблон.xml" -file_new "BIT_monitoring_server.xml" -logs_folder_old "C:\PerfLogs" -logs_folder_new $logs_folder -encoding "Unicode"
 logman import BIT_monitoring_server -xml "BIT_monitoring_server.xml"
 if ($server_type -like "*1C*" -or $server_type -like "*Postgree*") {
+    New-SettingsFileFromTemplate -file_old "BIT_monitoring_prosesses_шаблон.xml" -file_new "BIT_monitoring_prosesses.xml" -logs_folder_old "C:\PerfLogs" -logs_folder_new $logs_folder -encoding "Unicode"
     logman import BIT_monitoring_prosesses -xml "BIT_monitoring_prosesses.xml"
 }
 if ($server_type -like "*MSSQL*") {
+    New-SettingsFileFromTemplate -file_old "BIT_monitoring_MSSQL_шаблон.xml" -file_new "BIT_monitoring_MSSQL.xml" -logs_folder_old "C:\PerfLogs" -logs_folder_new $logs_folder -encoding "Unicode"
     logman import BIT_monitoring_MSSQL -xml "BIT_monitoring_MSSQL.xml"
 }
 
@@ -96,7 +178,7 @@ if ($server_type -like "*1C*" -or $server_type -like "*Postgree*") {
     Write-Host "-------------------------------------------------------------------------------------------------"
     Write-Host "Создаем задание по перезапуску сборщика счетчиков процессов раз в 10 минут"
 
-    schtasks.exe /Create /XML "Restart_counter_BIT_monitoring_prosesses.xml" /tn Restart_counter_BIT_monitoring_prosesses
+    schtasks.exe /Create /XML "Restart_counter_BIT_monitoring_prosesses.xml" /tn Restart_counter_BIT_monitoring_prosesses /F
 }
 
 
@@ -104,7 +186,7 @@ if ($server_type -like "*1C*" -or $server_type -like "*Postgree*") {
     Write-Host "-------------------------------------------------------------------------------------------------"
     Write-Host "Включаем вывод PID в сборщике счетчиков процессов"
     
-    reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\PerfProc\Performance /v ProcessNameFormat /t REG_DWORD /d 2
+    reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\PerfProc\Performance /v ProcessNameFormat /t REG_DWORD /d 2 /f
 }
 
 
@@ -142,26 +224,81 @@ if ($server_type -like "*1C*") {
     Write-Host "-------------------------------------------------------------------------------------------------"
     Write-Host "Включаем сбор логов тех. журнала 1С"
 
+    New-SettingsFileFromTemplate -file_old "logcfg_шаблон.xml" -file_new "logcfg.xml" -logs_folder_old "C:\BIT_1C_tech_logs" -logs_folder_new "$($logs_folder)\BIT_1C_tech_logs"
+
     COPY logcfg.xml "C:\Program Files\1cv8\conf"
+    COPY logcfg.xml "C:\Program Files\1cv8\$($version_1C)\bin\conf"
 }
 
 
 if ($server_type -like "*1C*") {
     Write-Host "-------------------------------------------------------------------------------------------------"
     
-	Write-Host "Регистрируем службу RAS"   
-    New-Service -Name "1C:Enterprise 8.3 Remote Server ($($cluster_port_1C))" -BinaryPathName "`"C:\Program Files\1cv8\$($version_1C)\bin\ras.exe`" cluster --service --port=$($RAS_port_1C) $(hostname):$($cluster_port_1C)" -DisplayName "1C:Enterprise 8.3 Remote Server ($($cluster_port_1C))" -StartupType Automatic
-    
-    Write-Host "Запускаем службу RAS"
-    Start-Service -Name "1C:Enterprise 8.3 Remote Server ($($cluster_port_1C))"
+    # ---------- Входные параметры ----------
+    $serviceName = "1C:Enterprise 8.3 Remote Server ($($cluster_port_1C))"
+    $rasExe      = "C:\Program Files\1cv8\$($version_1C)\bin\ras.exe"
+    $binPath     = "`"$rasExe`" cluster --service --port=$($RAS_port_1C) $(hostname):$($cluster_port_1C)"
+    $displayName = "1C:Enterprise 8.3 Remote Server ($($cluster_port_1C))"
+
+    if (-not $RAS_port_1C) {
+        throw "Не задан параметр RAS_port_1C — невозможно корректно определить/создать службу RAS."
+    }
+
+
+    # Ищем существующие службы
+    $portToken   = [regex]::Escape("--port=$RAS_port_1C") + '(\s|$)'
+    $serviceByPort = Get-CimInstance -ClassName Win32_Service -ErrorAction SilentlyContinue |
+        Where-Object {
+            $_.PathName -and
+            $_.PathName -match 'ras\.exe' -and
+            $_.PathName -match $portToken
+        } | Select-Object -First 1
+
+    # Логика поиска
+    if ($serviceByPort) {
+        $currentVersion = Get-PlatformVersionFromPath -Path $serviceByPort.PathName
+
+        if ($currentVersion -eq $version_1C) {
+            Write-Host "Служба RAS на порту $RAS_port_1C уже существует: '$($serviceByPort.Name)', версия $currentVersion."
+
+            if ($serviceByPort.State -eq 'Running') {
+                Write-Host "  Служба уже запущена."
+            }
+            else {
+                Write-Host "  Запускаем службу"
+                Start-Service -Name $serviceByPort.Name
+            }
+        }
+        else {
+            Write-Host "Служба RAS на порту $RAS_port_1C найдена ('$($serviceByPort.Name)'), но версия отличается (текущая: $currentVersion, требуется: $version_1C). Пересоздаём..."
+
+            Remove-RasService -Service $serviceByPort
+
+            Write-Host "Регистрируем службу RAS"
+            New-Service -Name $serviceName -BinaryPathName $binPath -DisplayName $displayName -StartupType Automatic | Out-Null
+
+            Write-Host "Запускаем службу RAS"
+            Start-Service -Name $serviceName
+        }
+    }
+    else {
+        Write-Host "Служба RAS на порту $RAS_port_1C не найдена. Регистрируем службу RAS"
+
+        New-Service -Name $serviceName -BinaryPathName $binPath -DisplayName $displayName -StartupType Automatic | Out-Null
+
+        Write-Host "Запускаем службу RAS"
+        Start-Service -Name $serviceName
+    }
 }
+
 
 if ($server_type -like "*1C*") {
     Write-Host "-------------------------------------------------------------------------------------------------"
     
-	Write-Host "Создаем папку C:\BIT_ClusterFoldersSizeLogs для логов размеров директорий кластера"   
-	New-Item -Path "C:\BIT_ClusterFoldersSizeLogs" -ItemType Directory
-	New-Item -Path "C:\BIT_ClusterFoldersSizeLogs\logs" -ItemType Directory
+	Write-Host "Создаем папку $($logs_folder)\BIT_ClusterFoldersSizeLogs для логов размеров директорий кластера"
+
+    New-Item -Path (Join-Path $logs_folder "BIT_ClusterFoldersSizeLogs") -ItemType Directory -Force | Out-Null
+    New-Item -Path (Join-Path $logs_folder "BIT_ClusterFoldersSizeLogs\logs") -ItemType Directory -Force | Out-Null
 
 	Write-Host "Установите утилиту Git Bash для выполнения скриптов *.sh, в частности, для мониторинга размеров директорий кластере 1С"
     Write-Host "Утилита должна быть установлена в папку C:\Program Files\Git\bin (по умолчанию)"
@@ -169,18 +306,20 @@ if ($server_type -like "*1C*") {
     Start-Process "https://git-scm.com/install/windows"
     pause	
 	
-	Write-Host "Формируем текст файла скрипта SaveClusterFoldersSize.sh для логирования размеров вложенных директорий кластера $($ClusterFolder_1C) в папку C:\BIT_ClusterFoldersSizeLogs"	
+	Write-Host "Формируем текст файла скрипта SaveClusterFoldersSize.sh для логирования размеров вложенных директорий кластера $($ClusterFolder_1C) в папку $($logs_folder)\BIT_ClusterFoldersSizeLogs"	
 	$currentDate = Get-Date;
 	$fileNameDate = $currentDate.ToString("yyyy-MM-dd_HHmmss");
-	New-Item -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -ItemType file
-	Clear-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh"
-	Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value "#!/bin/bash"
-	Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value ""
-	Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value 'archiving_date=$(date +''%y%m%d%H'')'
-	Add-Content -Path "C:\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh" -Value "du --apparent-size --max-depth=3 `"$($ClusterFolder_1C)`" > C:/BIT_ClusterFoldersSizeLogs/logs/SizeLogs_`${archiving_date}.txt"
+	New-Item -Path (Join-Path $logs_folder "\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh") -ItemType file -Force
+	Clear-Content -Path (Join-Path $logs_folder "\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh")
+	Add-Content -Path (Join-Path $logs_folder "\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh") -Value "#!/bin/bash"
+	Add-Content -Path (Join-Path $logs_folder "\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh") -Value ""
+	Add-Content -Path (Join-Path $logs_folder "\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh") -Value 'archiving_date=$(date +''%y%m%d%H'')'
+	Add-Content -Path (Join-Path $logs_folder "\BIT_ClusterFoldersSizeLogs\SaveClusterFoldersSize.sh") -Value "du --apparent-size --max-depth=3 `"$($ClusterFolder_1C)`" > $($logs_folder)/BIT_ClusterFoldersSizeLogs/logs/SizeLogs_`${archiving_date}.txt"
 	
     Write-Host "Создаем задание для логирования размеров директорий кластера"
-    schtasks.exe /Create /XML "BIT_Collecting_sizes_1C_cluster_folders.xml" /tn BIT_Collecting_sizes_1C_cluster_folders
+
+
+    schtasks.exe /Create /XML "BIT_Collecting_sizes_1C_cluster_folders.xml" /tn BIT_Collecting_sizes_1C_cluster_folders /F
 }
 
 Write-Host "-------------------------------------------------------------------------------------------------"
@@ -192,17 +331,8 @@ if ($server_type -like "*1C*") {
     Start-Sleep -Seconds 60
 }
 
-net share BIT_monitoring_server="C:\PerfLogs\Admin\BIT_monitoring_server" "/grant:$($share_user),FULL"
-if ($server_type -like "*1C*" -or $server_type -like "*Postgree*") {
-    net share BIT_monitoring_prosesses="C:\PerfLogs\Admin\BIT_monitoring_prosesses" "/grant:$($share_user),FULL"
-}
-if ($server_type -like "*MSSQL*") {
-    net share BIT_monitoring_MSSQL="C:\PerfLogs\Admin\BIT_monitoring_MSSQL" "/grant:$($share_user),FULL"
-}
-if ($server_type -like "*1C*") {
-    net share 1c_logs_BIT_monitoring="C:\1c_logs_BIT_monitoring" "/grant:$($share_user),FULL"
-	net share BIT_ClusterFoldersSizeLogs="C:\BIT_ClusterFoldersSizeLogs\logs" "/grant:$($share_user),FULL"
-}
+net share BIT_monitoring /delete /y 2>$null
+net share BIT_monitoring="$($logs_folder)" "/grant:$($share_user),FULL"
 
-Write-Host "Убедитесь, что сетевые папки доступны пользователю $($share_user). При необходимости, укажите пользователя в сетевых папках ВРУЧНУЮ"
+Write-Host "Убедитесь, что сетевая папка $($logs_folder) доступна пользователю $($share_user). При необходимости, укажите пользователя в сетевой папке ВРУЧНУЮ"
 pause
