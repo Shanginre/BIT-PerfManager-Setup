@@ -14010,7 +14010,7 @@
 			<v8:Ref xsi:type="v8:CatalogRef.ШаблоныСчетчиковМониторинга">9980494e-9a7a-11f0-9654-005056bd338d</v8:Ref>
 			<v8:DeletionMark>false</v8:DeletionMark>
 			<v8:Parent xsi:type="v8:CatalogRef.ШаблоныСчетчиковМониторинга">c9715abd-9523-11f0-80f1-005056a2398a</v8:Parent>
-			<v8:Description>Серверы, Загрузка оборудования, Скорость обмена с диском, КБ/с</v8:Description>
+			<v8:Description>Серверы, Загрузка оборудования, Скорость обмена с диском, КБ/с (iostat)</v8:Description>
 			<v8:ОбъектМониторинга>Серверы</v8:ОбъектМониторинга>
 			<v8:ТипСчетчикаМониторинга>ЗагрузкаОборудованияСервера</v8:ТипСчетчикаМониторинга>
 			<v8:ИсточникДанных>ДанныеСчетчиковПроизводительности</v8:ИсточникДанных>
@@ -14094,7 +14094,7 @@
 			<v8:Ref xsi:type="v8:CatalogRef.ШаблоныСчетчиковМониторинга">9980494f-9a7a-11f0-9654-005056bd338d</v8:Ref>
 			<v8:DeletionMark>false</v8:DeletionMark>
 			<v8:Parent xsi:type="v8:CatalogRef.ШаблоныСчетчиковМониторинга">c9715abd-9523-11f0-80f1-005056a2398a</v8:Parent>
-			<v8:Description>Серверы, Загрузка оборудования, Скорость обмена с диском, КБ/с</v8:Description>
+			<v8:Description>Серверы, Загрузка оборудования, Скорость обмена с диском, КБ/с (vmstat)</v8:Description>
 			<v8:ОбъектМониторинга>Серверы</v8:ОбъектМониторинга>
 			<v8:ТипСчетчикаМониторинга>ЗагрузкаОборудованияСервера</v8:ТипСчетчикаМониторинга>
 			<v8:ИсточникДанных>ДанныеСчетчиковПроизводительности</v8:ИсточникДанных>
@@ -24043,6 +24043,60 @@
 				<v8:РольСервераОсновной xsi:type="v8:CatalogRef.РолиСерверов">00000000-0000-0000-0000-000000000000</v8:РольСервераОсновной>
 				<v8:РольСервераСвязанный xsi:type="v8:CatalogRef.РолиСерверов">5052bf49-4f43-11f1-9470-bc2411d7e88c</v8:РольСервераСвязанный>
 				<v8:СчетчикМониторингаСвязанный xsi:type="v8:CatalogRef.ШаблоныСчетчиковМониторинга">19c7553a-97be-11f0-9654-005056bd338d</v8:СчетчикМониторингаСвязанный>
+				<v8:ВычислятьКорреляциюПриАнализеИнцидентов>false</v8:ВычислятьКорреляциюПриАнализеИнцидентов>
+			</v8:Record>
+		</v8:InformationRegisterRecordSet.СвязиШаблоновСчетчиковМониторинга>
+		<v8:InformationRegisterRecordSet.СвязиШаблоновСчетчиковМониторинга>
+			<v8:Filter>
+				<FilterItem xmlns="http://v8.1c.ru/8.1/data/enterprise">
+					<Name xsi:type="xs:string">СчетчикМониторингаОсновной</Name>
+					<Value xsi:type="v8:CatalogRef.ШаблоныСчетчиковМониторинга">ef8004b2-97a8-11f0-9654-005056bd338d</Value>
+				</FilterItem>
+				<FilterItem xmlns="http://v8.1c.ru/8.1/data/enterprise">
+					<Name xsi:type="xs:string">РольСервераОсновной</Name>
+					<Value xsi:type="v8:CatalogRef.РолиСерверов">5052bf49-4f43-11f1-9470-bc2411d7e88c</Value>
+				</FilterItem>
+				<FilterItem xmlns="http://v8.1c.ru/8.1/data/enterprise">
+					<Name xsi:type="xs:string">РольСервераСвязанный</Name>
+					<Value xsi:type="v8:CatalogRef.РолиСерверов">5052bf49-4f43-11f1-9470-bc2411d7e88c</Value>
+				</FilterItem>
+				<FilterItem xmlns="http://v8.1c.ru/8.1/data/enterprise">
+					<Name xsi:type="xs:string">СчетчикМониторингаСвязанный</Name>
+					<Value xsi:type="v8:CatalogRef.ШаблоныСчетчиковМониторинга">9980494e-9a7a-11f0-9654-005056bd338d</Value>
+				</FilterItem>
+			</v8:Filter>
+			<v8:Record>
+				<v8:СчетчикМониторингаОсновной xsi:type="v8:CatalogRef.ШаблоныСчетчиковМониторинга">ef8004b2-97a8-11f0-9654-005056bd338d</v8:СчетчикМониторингаОсновной>
+				<v8:РольСервераОсновной xsi:type="v8:CatalogRef.РолиСерверов">5052bf49-4f43-11f1-9470-bc2411d7e88c</v8:РольСервераОсновной>
+				<v8:РольСервераСвязанный xsi:type="v8:CatalogRef.РолиСерверов">5052bf49-4f43-11f1-9470-bc2411d7e88c</v8:РольСервераСвязанный>
+				<v8:СчетчикМониторингаСвязанный xsi:type="v8:CatalogRef.ШаблоныСчетчиковМониторинга">9980494e-9a7a-11f0-9654-005056bd338d</v8:СчетчикМониторингаСвязанный>
+				<v8:ВычислятьКорреляциюПриАнализеИнцидентов>false</v8:ВычислятьКорреляциюПриАнализеИнцидентов>
+			</v8:Record>
+		</v8:InformationRegisterRecordSet.СвязиШаблоновСчетчиковМониторинга>
+		<v8:InformationRegisterRecordSet.СвязиШаблоновСчетчиковМониторинга>
+			<v8:Filter>
+				<FilterItem xmlns="http://v8.1c.ru/8.1/data/enterprise">
+					<Name xsi:type="xs:string">СчетчикМониторингаОсновной</Name>
+					<Value xsi:type="v8:CatalogRef.ШаблоныСчетчиковМониторинга">ef8004b2-97a8-11f0-9654-005056bd338d</Value>
+				</FilterItem>
+				<FilterItem xmlns="http://v8.1c.ru/8.1/data/enterprise">
+					<Name xsi:type="xs:string">РольСервераОсновной</Name>
+					<Value xsi:type="v8:CatalogRef.РолиСерверов">5052bf4a-4f43-11f1-9470-bc2411d7e88c</Value>
+				</FilterItem>
+				<FilterItem xmlns="http://v8.1c.ru/8.1/data/enterprise">
+					<Name xsi:type="xs:string">РольСервераСвязанный</Name>
+					<Value xsi:type="v8:CatalogRef.РолиСерверов">5052bf4a-4f43-11f1-9470-bc2411d7e88c</Value>
+				</FilterItem>
+				<FilterItem xmlns="http://v8.1c.ru/8.1/data/enterprise">
+					<Name xsi:type="xs:string">СчетчикМониторингаСвязанный</Name>
+					<Value xsi:type="v8:CatalogRef.ШаблоныСчетчиковМониторинга">9980494e-9a7a-11f0-9654-005056bd338d</Value>
+				</FilterItem>
+			</v8:Filter>
+			<v8:Record>
+				<v8:СчетчикМониторингаОсновной xsi:type="v8:CatalogRef.ШаблоныСчетчиковМониторинга">ef8004b2-97a8-11f0-9654-005056bd338d</v8:СчетчикМониторингаОсновной>
+				<v8:РольСервераОсновной xsi:type="v8:CatalogRef.РолиСерверов">5052bf4a-4f43-11f1-9470-bc2411d7e88c</v8:РольСервераОсновной>
+				<v8:РольСервераСвязанный xsi:type="v8:CatalogRef.РолиСерверов">5052bf4a-4f43-11f1-9470-bc2411d7e88c</v8:РольСервераСвязанный>
+				<v8:СчетчикМониторингаСвязанный xsi:type="v8:CatalogRef.ШаблоныСчетчиковМониторинга">9980494e-9a7a-11f0-9654-005056bd338d</v8:СчетчикМониторингаСвязанный>
 				<v8:ВычислятьКорреляциюПриАнализеИнцидентов>false</v8:ВычислятьКорреляциюПриАнализеИнцидентов>
 			</v8:Record>
 		</v8:InformationRegisterRecordSet.СвязиШаблоновСчетчиковМониторинга>
