@@ -55,7 +55,7 @@ powershell -ExecutionPolicy Bypass -File "setup_monitoring.ps1" -server_type xxx
 
 #### Примеры:
 ```console
-powershell -File "make_monitoring_settings.ps1" -server_type 1C_MSSQL -version_1C 8.3.24.1667 -share_user everyone -logs_folder "D:\бит_мониторинг"
+powershell -File "setup_monitoring.ps1" -server_type 1C_MSSQL -version_1C 8.3.24.1667 -share_user everyone -logs_folder "D:\бит_мониторинг"
 
 ```
 - роли сервера: сервер приложений 1С и сервер СУБД MSSQL
@@ -67,7 +67,7 @@ powershell -File "make_monitoring_settings.ps1" -server_type 1C_MSSQL -version_1
 - адрес общего каталога логов мониторинга: D:\бит_мониторинг
 
 ```console
-powershell -File "make_monitoring_settings.ps1" -server_type 1C -version_1C 8.3.24.1667 -cluster_port_1C 2540 -RAS_port_1C 2545 -ClusterFolder_1C "D:\1cv8\srvinfo" -share_user admin -logs_folder "D:\бит_мониторинг"
+powershell -File "setup_monitoring.ps1" -server_type 1C -version_1C 8.3.24.1667 -cluster_port_1C 2540 -RAS_port_1C 2545 -ClusterFolder_1C "D:\1cv8\srvinfo" -share_user admin -logs_folder "D:\бит_мониторинг"
 
 ```
 - роли сервера: сервер приложений 1С
@@ -79,7 +79,7 @@ powershell -File "make_monitoring_settings.ps1" -server_type 1C -version_1C 8.3.
 - адрес общего каталога логов мониторинга: D:\бит_мониторинг
 
 ```console
-powershell -File "make_monitoring_settings.ps1" -server_type MSSQL -share_user admin -logs_folder "D:\бит_мониторинг"
+powershell -File "setup_monitoring.ps1" -server_type MSSQL -share_user admin -logs_folder "D:\бит_мониторинг"
 
 ```
 - роли сервера: сервер СУБД MSSQL

@@ -162,14 +162,14 @@ New-Item -Path $logs_folder -ItemType Directory -Force | Out-Null
 Write-Host "-------------------------------------------------------------------------------------------------"
 Write-Host "Создаем сборщики счетчиков Perfmon"
 
-New-SettingsFileFromTemplate -file_old "BIT_monitoring_server_шаблон.xml" -file_new "BIT_monitoring_server.xml" -logs_folder_old "C:\PerfLogs" -logs_folder_new $logs_folder -encoding "Unicode"
+New-SettingsFileFromTemplate -file_old "BIT_monitoring_server_template.xml" -file_new "BIT_monitoring_server.xml" -logs_folder_old "C:\PerfLogs" -logs_folder_new $logs_folder -encoding "Unicode"
 logman import BIT_monitoring_server -xml "BIT_monitoring_server.xml"
 if ($server_type -like "*1C*" -or $server_type -like "*Postgree*") {
-    New-SettingsFileFromTemplate -file_old "BIT_monitoring_prosesses_шаблон.xml" -file_new "BIT_monitoring_prosesses.xml" -logs_folder_old "C:\PerfLogs" -logs_folder_new $logs_folder -encoding "Unicode"
+    New-SettingsFileFromTemplate -file_old "BIT_monitoring_prosesses_template.xml" -file_new "BIT_monitoring_prosesses.xml" -logs_folder_old "C:\PerfLogs" -logs_folder_new $logs_folder -encoding "Unicode"
     logman import BIT_monitoring_prosesses -xml "BIT_monitoring_prosesses.xml"
 }
 if ($server_type -like "*MSSQL*") {
-    New-SettingsFileFromTemplate -file_old "BIT_monitoring_MSSQL_шаблон.xml" -file_new "BIT_monitoring_MSSQL.xml" -logs_folder_old "C:\PerfLogs" -logs_folder_new $logs_folder -encoding "Unicode"
+    New-SettingsFileFromTemplate -file_old "BIT_monitoring_MSSQL_template.xml" -file_new "BIT_monitoring_MSSQL.xml" -logs_folder_old "C:\PerfLogs" -logs_folder_new $logs_folder -encoding "Unicode"
     logman import BIT_monitoring_MSSQL -xml "BIT_monitoring_MSSQL.xml"
 }
 
@@ -224,7 +224,7 @@ if ($server_type -like "*1C*") {
     Write-Host "-------------------------------------------------------------------------------------------------"
     Write-Host "Включаем сбор логов тех. журнала 1С"
 
-    New-SettingsFileFromTemplate -file_old "logcfg_шаблон.xml" -file_new "logcfg.xml" -logs_folder_old "C:\BIT_1C_tech_logs" -logs_folder_new "$($logs_folder)\BIT_1C_tech_logs"
+    New-SettingsFileFromTemplate -file_old "logcfg_template.xml" -file_new "logcfg.xml" -logs_folder_old "C:\BIT_1C_tech_logs" -logs_folder_new "$($logs_folder)\BIT_1C_tech_logs"
 
     COPY logcfg.xml "C:\Program Files\1cv8\conf"
     COPY logcfg.xml "C:\Program Files\1cv8\$($version_1C)\bin\conf"
